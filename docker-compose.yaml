@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:1.15.8
+    container_name: 'nginx-container'
+    working_dir: /app
+    ports:
+      - '7777:80'
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./frontend_src/dist/red-button-frontend:/app/frontend
+    links:
+      - php-fpm-service
+
+  php-fpm-service:
+    build:
+      context: .
+      dockerfile: php-fpm.docker
+    working_dir: /app
+    container_name: 'php-fpm-container'
+    ports:
+      - '9000:9000'
+    volumes:
+      - ./backend_src/:/app
+      - ./config/keys/:/app/config/jwt
+      - ../../public/uploads:/app/public/uploads
+    links:
+      - postgres_db
+    env_file:
+      - ./config/.env.prod
+
+  postgres_db:
+    image: mdillon/postgis:10
+    container_name: 'postgres-db-container-dev'
+    restart: always
+    ports:
+      - '7778:5432'
+    volumes:
+      - red_button_database_volume_prod:/var/lib/postgresql/data
+    env_file:
+      - ./config/.env.prod
+
+volumes:
+  red_button_database_volume_prod:

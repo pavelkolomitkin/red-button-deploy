@@ -1,3 +1,7 @@
 backend_src
 frontend_src
+
 .idea/
+
+config/.env.prod
+config/keys
