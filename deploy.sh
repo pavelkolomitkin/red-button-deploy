@@ -3,7 +3,8 @@
 # shut down the compose if it's running
 echo -n 'Stop previous containers...'
 echo -en '\n'
-docker-compose stop
+docker-compose -f docker-compose.yaml down
+docker-compose -f docker-compose-db-migrations.yaml down
 
 # pull the both repositories - backend and frontend
 echo -en '\n'
@@ -22,25 +23,20 @@ fi
 cd ./frontend_src && git pull origin master && cd ..
 
 # build frontend application - the result of building should be passed into the directory ./frontend
-/bin/bash ./build-frontend.sh
+# /bin/bash ./build-frontend.sh
 
-# up docker compose
+# up docker compose in order to run database migrations
 echo -en '\n'
-echo -n 'Up docker compose...'
+echo -n 'Up docker compose of database migrations...'
 echo -en '\n'
-docker-compose up -d
-
-# install composer dependencies(use keys --no-dev --optimize-autoloader)
-echo -en '\n'
-echo -n 'Install compose dependencies...'
-echo -en '\n'
-docker exec php-fpm-container composer install --no-dev --optimize-autoloader
+docker-compose -f docker-compose-db-migrations.yaml up -d
+docker exec php-container composer install
 
 # run database migrations
 echo -en '\n'
 echo -n 'Run database migrations...'
 echo -en '\n'
-until docker exec php-fpm-container php bin/console doctrine:migrations:migrate --env=prod --no-interaction
+until docker exec php-container php bin/console doctrine:migrations:migrate --no-interaction
 do
     echo -en '\n'
     echo -n 'Waiting postgres...'
@@ -53,11 +49,12 @@ do
     echo -en '\n'
 done
 
-# clear cache env=prod
+docker-compose -f docker-compose-db-migrations.yaml down
+
+# up docker compose production
 echo -en '\n'
-echo -n 'Clear cache...'
+echo -n 'Up docker compose production...'
 echo -en '\n'
-docker exec php-fpm-container php bin/console clear:cache --env=prod
+docker-compose -f docker-compose.yaml up -d
 
-
-
+docker exec php-fpm-container-prod composer install --no-dev --optimize-autoloader

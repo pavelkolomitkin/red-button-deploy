@@ -4,4 +4,6 @@ frontend_src
 .idea/
 
 config/.env.prod
+config/.env.build
+
 config/keys

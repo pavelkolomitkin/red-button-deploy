@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  php-service:
+    build:
+      context: .
+      dockerfile: php-db-migrations.docker
+    container_name: 'php-container'
+    working_dir: /app
+    volumes:
+      - ./backend_src:/app
+    links:
+      - postgres_db
+    env_file:
+      - ./config/.env.build
+
+  postgres_db:
+    image: mdillon/postgis:10
+    container_name: 'postgres-db-container'
+    restart: always
+    ports:
+      - '7778:5432'
+    volumes:
+      - red_button_database_volume_prod:/var/lib/postgresql/data
+    env_file:
+      - ./config/.env.build
+
+volumes:
+  red_button_database_volume_prod:

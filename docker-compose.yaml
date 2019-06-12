@@ -3,12 +3,16 @@ version: '3'
 services:
   nginx:
     image: nginx:1.15.8
-    container_name: 'nginx-container'
+    container_name: 'nginx-container-prod'
     working_dir: /app
     ports:
-      - '7777:80'
+      - '80:80'
     volumes:
+      - ./backend_src:/app/backend
+      - ./config/keys:/app/backend/config/jwt
       - ./config/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./uploads:/app/backend/public/uploads
+      - ./media:/app/backend/public/media
       - ./frontend_src/dist/red-button-frontend:/app/frontend
     links:
       - php-fpm-service
@@ -17,14 +21,15 @@ services:
     build:
       context: .
       dockerfile: php-fpm.docker
-    working_dir: /app
-    container_name: 'php-fpm-container'
+    container_name: 'php-fpm-container-prod'
+    working_dir: /app/backend
     ports:
       - '9000:9000'
     volumes:
-      - ./backend_src/:/app
-      - ./config/keys/:/app/config/jwt
-      - ../../public/uploads:/app/public/uploads
+      - ./backend_src:/app/backend
+      - ./config/keys:/app/backend/config/jwt
+      - ./uploads:/app/backend/public/uploads
+      - ./media:/app/backend/public/media
     links:
       - postgres_db
     env_file:
@@ -32,7 +37,7 @@ services:
 
   postgres_db:
     image: mdillon/postgis:10
-    container_name: 'postgres-db-container-dev'
+    container_name: 'postgres-db-container-prod'
     restart: always
     ports:
       - '7778:5432'
