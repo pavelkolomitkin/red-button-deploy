@@ -23,7 +23,7 @@ fi
 cd ./frontend_src && git pull origin master && cd ..
 
 # build frontend application - the result of building should be passed into the directory ./frontend
-# /bin/bash ./build-frontend.sh
+/bin/bash ./build-frontend.sh
 
 # up docker compose in order to run database migrations
 echo -en '\n'
