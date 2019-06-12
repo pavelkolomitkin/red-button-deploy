@@ -7,10 +7,12 @@ services:
     working_dir: /app
     ports:
       - '80:80'
+      - '443:443'
     volumes:
       - ./backend_src:/app/backend
       - ./config/keys:/app/backend/config/jwt
       - ./config/nginx.conf:/etc/nginx/conf.d/default.conf
+      - /etc/letsencrypt:/etc/nginx/letsencrypt
       - ./uploads:/app/backend/public/uploads
       - ./media:/app/backend/public/media
       - ./frontend_src/dist/red-button-frontend:/app/frontend
