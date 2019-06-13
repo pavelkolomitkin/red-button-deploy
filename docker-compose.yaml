@@ -34,7 +34,7 @@ services:
       - ./media:/app/backend/public/media
     links:
       - postgres_db
-      - postfix_mailer
+      - smtp_mailer
     env_file:
       - ./config/.env.prod
 
@@ -49,17 +49,29 @@ services:
     env_file:
       - ./config/.env.prod
 
-  postfix_mailer:
-    image: catatnight/postfix
-    container_name: 'postfix-mailer-prod'
+  smtp_mailer:
+    image: namshi/smtp
+    container_name: 'smtp-mailer-prod'
     ports:
       - '25:25'
       - '587:587'
     volumes:
-      - /etc/opendkim:/etc/opendkim/domainkeys
-      - /etc/letsencrypt/live/rbutton.ru:/etc/postfix/certs
+      - /etc/letsencrypt/live/rbutton.ru/privkey.pem:/etc/smpt_keys/private.pem
+      - /etc/letsencrypt/live/rbutton.ru/cert.pem:/etc/smpt_keys/cert.pem
     env_file:
-      - ./config/.env-postfix.prod
+      - ./config/.env.mailer
+
+#  postfix_mailer:
+#    image: catatnight/postfix
+#    container_name: 'postfix-mailer-prod'
+#    ports:
+#      - '25:25'
+#      - '587:587'
+#    volumes:
+#      - /etc/opendkim:/etc/opendkim/domainkeys
+#      - /etc/letsencrypt/live/rbutton.ru:/etc/postfix/certs
+#    env_file:
+#      - ./config/.env-postfix.prod
 
 volumes:
   red_button_database_volume_prod:

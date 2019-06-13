@@ -5,6 +5,6 @@ frontend_src
 
 config/.env.prod
 config/.env.build
-config/.env-postfix.prod
+config/.env.mailer
 
 config/keys
