@@ -52,6 +52,9 @@ services:
   postfix_mailer:
     image: catatnight/postfix
     container_name: 'postfix-mailer-prod'
+    ports:
+      - '25:25'
+      - '587:587'
     volumes:
       - /etc/opendkim:/etc/opendkim/domainkeys
       - /etc/letsencrypt/live/rbutton.ru:/etc/postfix/certs
