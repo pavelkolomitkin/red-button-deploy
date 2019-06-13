@@ -34,6 +34,7 @@ services:
       - ./media:/app/backend/public/media
     links:
       - postgres_db
+      - postfix_mailer
     env_file:
       - ./config/.env.prod
 
@@ -47,6 +48,15 @@ services:
       - red_button_database_volume_prod:/var/lib/postgresql/data
     env_file:
       - ./config/.env.prod
+
+  postfix_mailer:
+    image: catatnight/postfix
+    container_name: 'postfix-mailer-prod'
+    volumes:
+      - /etc/opendkim:/etc/opendkim/domainkeys
+      - /etc/letsencrypt/live/rbutton.ru:/etc/postfix/certs
+    env_file:
+      - ./config/.env-postfix.prod
 
 volumes:
   red_button_database_volume_prod:
