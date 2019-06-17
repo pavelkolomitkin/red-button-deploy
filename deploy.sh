@@ -58,3 +58,5 @@ echo -en '\n'
 docker-compose -f docker-compose.yaml up -d
 
 docker exec php-fpm-container-prod composer install --no-dev --optimize-autoloader
+
+/bin/bash ./config-mail-server.sh
