@@ -34,7 +34,7 @@ services:
       - ./media:/app/backend/public/media
     links:
       - postgres_db
-      - smtp_mailer
+      - mailer-service
     env_file:
       - ./config/.env.prod
 
@@ -49,29 +49,23 @@ services:
     env_file:
       - ./config/.env.prod
 
-  smtp_mailer:
-    image: namshi/smtp
-    container_name: 'smtp-mailer-prod'
+  mailer-service:
+    image: catatnight/postfix
+    hostname: 'mail'
+    domainname: 'rbutton.ru'
+    container_name: 'mailer-service-prod'
     ports:
-      - '25:25'
-      - '587:587'
+      - "25:25"
     volumes:
-      - /etc/letsencrypt/live/rbutton.ru/privkey.pem:/etc/smpt_keys/private.pem
-      - /etc/letsencrypt/live/rbutton.ru/cert.pem:/etc/smpt_keys/cert.pem
+      - ./config/mailer/opendkim:/etc/opendkim
+      - /etc/letsencrypt/live/rbutton.ru/fullchain.pem:/etc/postfix/certs/public.crt
+      - /etc/letsencrypt/live/rbutton.ru/privkey.pem:/etc/postfix/certs/private.key
     env_file:
       - ./config/.env.mailer
-
-#  postfix_mailer:
-#    image: catatnight/postfix
-#    container_name: 'postfix-mailer-prod'
-#    ports:
-#      - '25:25'
-#      - '587:587'
-#    volumes:
-#      - /etc/opendkim:/etc/opendkim/domainkeys
-#      - /etc/letsencrypt/live/rbutton.ru:/etc/postfix/certs
-#    env_file:
-#      - ./config/.env-postfix.prod
+    cap_add:
+      - NET_ADMIN
+      - SYS_PTRACE
+    restart: always
 
 volumes:
   red_button_database_volume_prod:
