@@ -6,6 +6,5 @@ frontend_src
 config/.env.prod
 config/.env.build
 config/.env.mailer
-mailer/
 
 config/keys
